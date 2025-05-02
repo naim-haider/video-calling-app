@@ -1,7 +1,9 @@
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
+import dotenv from "dotenv";
 
+dotenv.config();
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -31,6 +33,8 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(5000, () => {
+const PORT = process.env.PORT || 5000;
+
+server.listen(PORT, () => {
   console.log("Signaling server running on port 5000");
 });
