@@ -15,7 +15,7 @@ const App = () => {
 
     socket.on("user-joined", async () => {
       console.log("New user joined the room, creating offer...");
-      await createOffer();
+      // await createOffer();
     });
 
     socket.on("ready", async () => {
