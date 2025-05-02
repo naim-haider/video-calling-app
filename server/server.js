@@ -20,6 +20,10 @@ io.on("connection", (socket) => {
     socket.to(roomId).emit("user-joined", socket.id);
   });
 
+  socket.on("ready", (roomId) => {
+    socket.to(roomId).emit("ready");
+  });
+
   socket.on("offer", (data) => {
     socket.to(data.roomId).emit("offer", data.sdp);
   });

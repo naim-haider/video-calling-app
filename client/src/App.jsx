@@ -18,6 +18,11 @@ const App = () => {
       await createOffer();
     });
 
+    socket.on("ready", async () => {
+      console.log("Remote peer is ready. Creating offer...");
+      await createOffer();
+    });
+
     socket.on("offer", async (sdp) => {
       console.log("Received offer, creating answer...");
       await createAnswer(sdp);
@@ -104,6 +109,8 @@ const App = () => {
     localStream.getTracks().forEach((track) => {
       peerConnectionRef.current.addTrack(track, localStream);
     });
+
+    socket.emit("ready", roomId);
   };
 
   const joinRoom = () => {
