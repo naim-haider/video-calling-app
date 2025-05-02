@@ -11,7 +11,7 @@ const App = () => {
   const [joined, setJoined] = useState(false);
 
   useEffect(() => {
-    socket.emit("join", roomId);
+    // socket.emit("join", roomId);
 
     socket.on("user-joined", async () => {
       console.log("New user joined the room, creating offer...");
@@ -46,6 +46,7 @@ const App = () => {
 
     return () => {
       socket.off("user-joined");
+      socket.off("ready");
       socket.off("offer");
       socket.off("answer");
       socket.off("ice-candidate");
