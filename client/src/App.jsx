@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 
-const socket = io("https://video-calling-app-nine.vercel.app/");
+const socket = io("https://video-calling-app-gcom.onrender.com/");
 
 const App = () => {
   const localVideoRef = useRef(null);
