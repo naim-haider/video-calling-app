@@ -35,6 +35,10 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("user disconnected: ", socket.id);
   });
+
+  socket.on("reject-call", (roomId) => {
+    socket.to(roomId).emit("call-rejected");
+  });
 });
 
 app.get("/", (req, res) => {

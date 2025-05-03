@@ -11,11 +11,8 @@ const App = () => {
   const [joined, setJoined] = useState(false);
 
   useEffect(() => {
-    // socket.emit("join", roomId);
-
     socket.on("user-joined", async () => {
       console.log("New user joined the room, creating offer...");
-      // await createOffer();
     });
 
     socket.on("ready", async () => {
@@ -44,14 +41,32 @@ const App = () => {
       }
     });
 
+    socket.on("call-rejected", () => {
+      console.log("Your call was rejected");
+
+      if (localVideoRef.current?.srcObject) {
+        localVideoRef.current.srcObject
+          .getTracks()
+          .forEach((track) => track.stop());
+        localVideoRef.current.srcObject = null;
+      }
+
+      if (peerConnectionRef.current) {
+        peerConnectionRef.current.close();
+        peerConnectionRef.current = null;
+      }
+      alert("Your call was rejected by the other peer.");
+    });
+
     return () => {
       socket.off("user-joined");
       socket.off("ready");
       socket.off("offer");
       socket.off("answer");
       socket.off("ice-candidate");
+      socket.off("call-rejected");
     };
-  }, [roomId]);
+  }, []);
 
   // craeting peerConnection
   const createPeerConnection = () => {
@@ -98,6 +113,7 @@ const App = () => {
     socket.emit("answer", { roomId, sdp: answer });
   };
 
+  // start video handler
   const startVideo = async () => {
     const localStream = await navigator.mediaDevices.getUserMedia({
       video: true,
@@ -112,6 +128,24 @@ const App = () => {
     });
 
     socket.emit("ready", roomId);
+  };
+
+  // reject call handler
+  const handleRejectCall = () => {
+    if (localVideoRef.current?.srcObject) {
+      localVideoRef.current.srcObject
+        .getTracks()
+        .forEach((track) => track.stop());
+      localVideoRef.current.srcObject = null;
+    }
+
+    if (peerConnectionRef.current) {
+      peerConnectionRef.current.close();
+      peerConnectionRef.current = null;
+    }
+
+    socket.emit("reject-call", roomId);
+    alert("You rejected the call");
   };
 
   const joinRoom = () => {
@@ -151,7 +185,22 @@ const App = () => {
               style={{ width: "45%", margin: 5, backgroundColor: "gray" }}
             />
           </div>
-          <button onClick={startVideo}>Start Video</button>
+          <button onClick={startVideo} style={{ margin: 10 }}>
+            Start Video
+          </button>
+          <button
+            onClick={handleRejectCall}
+            style={{
+              margin: 10,
+              backgroundColor: "red",
+              color: "white",
+              padding: "8px 16px",
+              borderRadius: "6px",
+              border: "none",
+            }}
+          >
+            Reject Call
+          </button>
         </>
       )}
     </div>
